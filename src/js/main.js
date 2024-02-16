@@ -5,26 +5,36 @@ const cardContainer = document.querySelector('.weather-cards');
 formInputLocation.addEventListener('submit', renderWeatherInfo);
 
 async function renderWeatherInfo(e) {
+    //!Попробуй тут удавить старые карточки, я сейчас хуй знает сработает или нет
+
     e.preventDefault();
 
     const key = '61421fe7402aefb8c509652d22397967';
+
     const cityName = cityNameInput.value;
 
+    if (cityName == '') return;
+
     try {
-        const geocodingResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${key}`);
+        const geocodingResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${key}&limit=${5}`);
         if (!geocodingResponse.ok) {
             throw new Error('Geocoding API request failed');
         }
         const geocodingData = await geocodingResponse.json();
-        const { lat, lon } = geocodingData[0];
+        console.log(geocodingData);
 
-        const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}&units=metric&lang=ru`);
-        if (!weatherResponse.ok) {
-            throw new Error('Weather API request failed');
-        }
-        const weatherData = await weatherResponse.json();
+        // Итерируем по массиву геокодированных данных и для каждого города создаем карточку погоды
+        geocodingData.forEach(async (cityData) => {
+            const { lat, lon } = cityData;
 
-        updateWeatherCard(weatherData);
+            const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}&units=metric&lang=ru`);
+            if (!weatherResponse.ok) {
+                throw new Error('Weather API request failed');
+            }
+            const weatherData = await weatherResponse.json();
+
+            updateWeatherCard(weatherData);
+        });
     } catch (error) {
         console.error('There was a problem with your fetch operation:', error);
         displayErrorMessage();
@@ -32,7 +42,7 @@ async function renderWeatherInfo(e) {
 }
 
 function updateWeatherCard(weatherData) {
-    const sunriseTime = new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const sunriseTime = new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const weatherCardHTML = `
         <li class="weather-card">
         <div class="weather-card__icon">
@@ -50,24 +60,14 @@ function updateWeatherCard(weatherData) {
             </div>
         </li>`;
 
-    removeOldWeatherCard();
     cardContainer.insertAdjacentHTML('beforeend', weatherCardHTML);
-}
-
-
-function removeOldWeatherCard() {
-    const oldWeatherCard = document.querySelector('.weather-card');
-    if (oldWeatherCard) {
-        oldWeatherCard.remove();
-    }
 }
 
 function displayErrorMessage() {
     const weatherCardHTML = `
         <li class="weather-card">
-            Нету такого города
+            Такой город не найден
         </li>`;
 
-    removeOldWeatherCard();
     cardContainer.insertAdjacentHTML('beforeend', weatherCardHTML);
 }
