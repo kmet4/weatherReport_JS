@@ -73,16 +73,16 @@ function updateWeatherCard(weatherData) {
     const weatherCardHTML = `
         <li class="weather-card">
             <div class="weather-card__icon">
-                <img src="/" alt="Иконка погоды" class="icon__image">
+                <img src="src/images/animated-svg/${weatherData.weather[0].icon}.svg" alt="Иконка погоды" class="icon__image">
             </div>
             <div class="weather-card__info">
                 <div class="weather-card__city-name">${weatherData.name}, ${weatherData.sys.country}</div>
                 <div class="weather-card__temperature">${Math.round(weatherData.main.temp)}&deg;C/${Math.round(weatherData.main.feels_like)}&deg;C</div>
                 <div class="weather-card__feels-like-temperature"></div>
                 <div class="weather-card__additional-weather-data">
-                    <div class="weather-card__wind-speed cntr"><img class="weather-card__addit-image" src="src/images/svg/wind.svg"> ${weatherData.wind.speed}км/ч</div>
-                    <div class="weather-card__humidity cntr"><img class="weather-card__addit-image" src="src/images/svg/humidity.svg"> ${weatherData.main.humidity}%</div>
-                    <div class="weather-card__sunrise cntr"><img class="weather-card__addit-image" src="src/images/svg/sunrise.svg"> ${sunriseTime}</div>
+                    <div class="weather-card__wind-speed cntr"><img class="weather-card__addit-image" src="src/images/static-svg/wind.svg"> ${weatherData.wind.speed}км/ч</div>
+                    <div class="weather-card__humidity cntr"><img class="weather-card__addit-image" src="src/images/static-svg/humidity.svg"> ${weatherData.main.humidity}%</div>
+                    <div class="weather-card__sunrise cntr"><img class="weather-card__addit-image" src="src/images/static-svg/sunrise.svg"> ${sunriseTime}</div>
                 </div>
             </div>
         </li>`;
@@ -96,6 +96,9 @@ function displayErrorMessage() {
     const weatherCardHTML = `
         <li class="weather-card">
             Такой город не найден
+            <div class="weather-card__icon">
+                <img src="src/images/gif/error.gif" alt="Анимация ошибка" class="icon__image icon__image_error">
+            </div>
         </li>`;
 
     cardContainer.insertAdjacentHTML('beforeend', weatherCardHTML);
