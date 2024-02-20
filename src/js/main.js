@@ -6,6 +6,13 @@ const cardContainer = document.querySelector('.weather-cards');
 // Добавляем слушатель события submit на форму для отображения информации о погоде
 formInputLocation.addEventListener('submit', renderWeatherInfo);
 
+//Воссоздаём последний введённый пользоваелем город из LocalStorage
+if (localStorage.getItem('cityName')){
+    cityName = JSON.parse(localStorage.getItem('cityName'));
+    cityNameInput.value = cityName;
+    formInputLocation.dispatchEvent(new Event('submit'));
+}
+
 // Функция для отображения информации о погоде
 async function renderWeatherInfo(event) {
     event.preventDefault();
@@ -17,7 +24,13 @@ async function renderWeatherInfo(event) {
     const cityName = cityNameInput.value;
 
     // Проверяем, что введено название города
-    if (cityName === '') return;
+    if (cityName === '') {
+        removeOldCards();
+        saveCityNameToLocalStorage(cityName);
+        return;
+    }
+
+    saveCityNameToLocalStorage(cityName);
 
     // Удаляем старые карточки с предыдущими данными о погоде
     removeOldCards();
@@ -97,7 +110,7 @@ function displayErrorMessage() {
         <li class="weather-card">
             Такой город не найден
             <div class="weather-card__icon">
-                <img src="src/images/gif/error.gif" alt="Анимация ошибка" class="icon__image icon__image_error">
+                <img src="src/images/gif/error.gif" alt="Анимация ошибка" class="icon__image icon__image_non-shadow">
             </div>
         </li>`;
 
@@ -109,4 +122,9 @@ function removeOldCards() {
     const oldWeatherCards = document.querySelectorAll('.weather-card');
     if (oldWeatherCards.length === 0) return;
     oldWeatherCards.forEach(card => card.remove());
+}
+
+//Функция для сохранения последнего введённого города
+function saveCityNameToLocalStorage(cityName){
+    localStorage.setItem('cityName', JSON.stringify(cityName));
 }
